@@ -1,0 +1,10 @@
+---
+name: mgr
+
+templates:
+  bin/pre-start.erb: bin/pre-start
+
+packages:
+- ceph
+
+properties: {}

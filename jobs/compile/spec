@@ -1,0 +1,10 @@
+---
+# This job is just for "compiling" the release for use in `bosh export-release`
+name: compile
+
+templates: {}
+
+packages:
+- ceph
+
+properties: {}

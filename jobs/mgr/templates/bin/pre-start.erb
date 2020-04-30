@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+pushd /var/vcap/packages/ceph
+  dpkg -l ceph || ./install_ceph.sh
+popd

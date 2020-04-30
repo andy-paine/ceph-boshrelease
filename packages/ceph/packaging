@@ -1,0 +1,25 @@
+set -e
+
+ceph_version=12.2.13-1xenial
+
+cd $BOSH_INSTALL_TARGET
+sudo apt-get install -y apt-transport-https
+wget -q -O- 'https://download.ceph.com/keys/release.asc' | sudo apt-key add -
+sudo apt-add-repository 'deb https://download.ceph.com/debian-luminous/ xenial main'
+sudo apt-get update
+
+apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks \
+  --no-replaces --no-enhances --no-pre-depends ceph=$ceph_version \
+  | grep "^\w" | sort -u > deb_packages.txt
+
+for pkg in $(cat deb_packages.txt); do
+  # If package isn't already installed, download it
+  dpkg -l >/dev/null 2>&1 $pkg || sudo apt-get download $pkg
+done
+
+wget -q -O - https://raw.githubusercontent.com/starkandwayne/homebrew-cf/master/public.key | apt-key add -
+echo "deb http://apt.starkandwayne.com stable main" | tee /etc/apt/sources.list.d/starkandwayne.list
+apt-get update && apt-get install -y install-debs-in-order
+
+install-debs-in-order . > install_ceph.sh
+chmod +x install_ceph.sh
